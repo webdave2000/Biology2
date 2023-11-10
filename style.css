@@ -1,0 +1,15 @@
+.card {
+    width: 150px;
+    height: 100px;
+    margin: 10px;
+    display: inline-block;
+    background-color: #f0f0f0;
+    border: 1px solid #ddd;
+    text-align: center;
+    vertical-align: top;
+    cursor: pointer;
+}
+
+.hidden {
+    background-color: #ddd;
+}
