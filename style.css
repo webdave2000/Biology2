@@ -1,15 +1,35 @@
-.card {
-    width: 150px;
-    height: 100px;
-    margin: 10px;
-    display: inline-block;
-    background-color: #f0f0f0;
-    border: 1px solid #ddd;
+body {
+    font-family: Arial, sans-serif;
     text-align: center;
-    vertical-align: top;
-    cursor: pointer;
 }
 
-.hidden {
-    background-color: #ddd;
+#gameBoard {
+    margin: auto;
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 14px;
+    max-width: 800px;
+}
+
+.card {
+    cursor: pointer;
+    background: #f0f0f0;
+    border: 2px solid #333;
+    padding: 20px;
+    min-height: 120px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 0.9em;
+}
+
+.matched {
+    background: #90ee95;
+    cursor: default;
+}
+
+#chronometer {
+    font-size: 25px;
+    text-align: center;
+    margin: 25px;
 }
