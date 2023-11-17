@@ -2,6 +2,7 @@ let selectedCards = [];
 let matches = 0;
 let timer;
 let startTime;
+let gameCards = []; // Global variable for the cards used in the game
 
 const words = [
     { term: "Glycolysis", definition: "The first stage of cellular respiration, breaking down glucose into pyruvate to produce ATP." },
@@ -24,14 +25,6 @@ const words = [
     { term: "DNA Replication", definition: "The process of making a copy of DNA, ensuring genetic information is preserved and passed on during cell division." }
 ];
 
-// Creating cards for each word and definition
-let cards = [];
-words.forEach((word, index) => {
-    cards.push({ id: index, text: word.term, type: 'term' });
-    cards.push({ id: index, text: word.definition, type: 'definition' });
-});
-
-// Shuffle function to randomize the cards
 function shuffle(array) {
     for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -39,14 +32,12 @@ function shuffle(array) {
     }
 }
 
-shuffle(cards); // Shuffle the cards
-
 function createCardElement(cardText, cardId, cardType) {
     const cardElement = document.createElement('div');
     cardElement.classList.add('card');
-    cardElement.innerText = 'Click me';
-    cardElement.setAttribute('data-id', cardId); // Set a data attribute for the card ID
-    cardElement.setAttribute('data-type', cardType); // Set a data attribute for the card type
+    cardElement.innerText = cardText; // Set initial text to "Click me" or similar
+    cardElement.setAttribute('data-id', cardId);
+    cardElement.setAttribute('data-type', cardType); // Set the type attribute (term or definition)
     cardElement.addEventListener('click', function() {
         handleCardClick(this, cardId, cardType);
     });
@@ -55,40 +46,40 @@ function createCardElement(cardText, cardId, cardType) {
 
 function handleCardClick(cardElement, cardId, cardType) {
     if (selectedCards.length < 2 && !cardElement.classList.contains('matched')) {
-        cardElement.innerText = cardElement.getAttribute('data-type') === 'term' ? 
-                               words[cardId].term : words[cardId].definition;
-        selectedCards.push(cardElement);
+        const cardData = gameCards.find(card => card.id === cardId && card.type === cardType);
+        cardElement.innerText = cardData.text;
+        selectedCards.push({ element: cardElement, data: cardData });
 
         if (selectedCards.length === 2) {
             setTimeout(() => {
-                const firstCardId = selectedCards[0].getAttribute('data-id');
-                const secondCardId = selectedCards[1].getAttribute('data-id');
-                const firstCardType = selectedCards[0].getAttribute('data-type');
-                const secondCardType = selectedCards[1].getAttribute('data-type');
+                const firstCardData = selectedCards[0].data;
+                const secondCardData = selectedCards[1].data;
 
-                if (firstCardId === secondCardId && firstCardType !== secondCardType) {
-                    selectedCards.forEach(card => card.classList.add('matched'));
+                if (firstCardData.id === secondCardData.id && firstCardData.type !== secondCardData.type) {
+                    selectedCards.forEach(cardObj => cardObj.element.classList.add('matched'));
                     matches++;
-                    if (matches === words.length) {
-                        alert('Congratulations! You matched all the cards!');
-                    }
                 } else {
-                    selectedCards.forEach(card => card.innerText = 'Click me');
+                    selectedCards.forEach(cardObj => cardObj.element.innerText = 'Click me');
                 }
+
+                if (matches === gameCards.length / 2) {
+                    alert('Congratulations! You matched all the cards!');
+                    stopChronometer();
+                }
+
                 selectedCards = [];
             }, 500);
         }
     }
 }
 
+
 function startChronometer() {
-    console.log('Chronometer started');
     startTime = new Date();
     timer = setInterval(updateChronometer, 1000);
 }
 
 function updateChronometer() {
-    console.log('Chronometer updating');
     const currentTime = new Date();
     const elapsedTime = new Date(currentTime - startTime);
     let hours = elapsedTime.getUTCHours().toString().padStart(2, '0');
@@ -98,20 +89,40 @@ function updateChronometer() {
 }
 
 function stopChronometer() {
-    console.log('Chronometer stopped');
     clearInterval(timer);
 }
 
+function chooseDifficulty() {
+    shuffle(words); // Shuffle the entire words array for randomness
+    let difficulty = prompt("Choose a difficulty: Easy, Medium, Hard").toLowerCase();
+    switch (difficulty) {
+        case 'easy':
+            return words.slice(0, 6);
+        case 'medium':
+            return words.slice(0, 9);
+        default:
+            return words; // Hard or default to all words
+    }
+}
+
 function initializeGame() {
-    shuffle(cards); // Shuffle the cards before initializing the game
+    let selectedWords = chooseDifficulty();
+    gameCards = selectedWords.flatMap((word, index) => [
+        { id: index, text: word.term, type: 'term' },
+        { id: index, text: word.definition, type: 'definition' }
+    ]);
+
+    shuffle(gameCards); // Shuffle the game cards
+
     const gameBoard = document.getElementById('gameBoard');
     gameBoard.innerHTML = ''; // Clear the game board
-    cards.forEach(card => {
+    gameCards.forEach(card => {
         const cardElement = createCardElement('Click me', card.id, card.type);
         gameBoard.appendChild(cardElement);
     });
+
+    selectedCards = [];
     matches = 0; // Reset matches
     startChronometer(); // Start the chronometer
 }
-
 initializeGame();

@@ -8,8 +8,13 @@
 <body>
     <h1>Dave's Biology Memory Card Game</h1>
     <h2>Module 5</h2>
-    <div id="chronometer">00:00:00</div>
-    <div id="gameBoard"></div>
+<div id="difficulty">
+    <button onclick="initializeGame('easy')">Easy (5 Cards)</button>
+    <button onclick="initializeGame('medium')">Medium (7 Cards)</button>
+    <button onclick="initializeGame('hard')">Hard (All Cards)</button>
+</div>
+<div id="chronometer">00:00:00</div>
+<div id="gameBoard"></div>
     <script src="script.js"></script>
 </body>
 </html>
